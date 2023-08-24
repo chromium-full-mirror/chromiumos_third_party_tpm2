@@ -8,29 +8,5 @@
 #include        "Implementation.h"
 #include        "Platform.h"
 #include        "PlatformData.h"
-//
-//     From Cancel.c
-//
-BOOL                      s_isCanceled;
-//
-//     From Clock.c
-//
-unsigned long long        s_initClock;
-unsigned int              s_adjustRate;
-//
-//     From LocalityPlat.c
-//
-unsigned char             s_locality;
-//
-//     From Power.c
-//
-BOOL                      s_powerLost;
-//
-//     From Entropy.c
-//
-uint32_t                  lastEntropy;
-int                       firstValue;
-//
-//     From PPPlat.c
-//
-BOOL   s_physicalPresence;
+
+struct GlobalStructPlatform global_plt_struct;

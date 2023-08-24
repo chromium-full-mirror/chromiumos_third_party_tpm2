@@ -13,28 +13,61 @@
 //
 //     From Cancel.c Cancel flag. It is initialized as FALSE, which indicate the command is not being canceled
 //
-extern BOOL         s_isCanceled;
 //
 //     From Clock.c This variable records the time when _plat__ClockReset() is called. This mechanism allow
 //     us to subtract the time when TPM is power off from the total time reported by clock() function
 //
-extern unsigned long long          s_initClock;
-extern unsigned int                s_adjustRate;
 //
 //     From LocalityPlat.c Locality of current command
 //
-extern unsigned char s_locality;
 //
 //     From PPPlat.c Physical presence. It is initialized to FALSE
 //
-extern BOOL         s_physicalPresence;
 //
 //     From Power
 //
-extern BOOL             s_powerLost;
 //
 //     From Entropy.c
 //
-extern uint32_t        lastEntropy;
-extern int             firstValue;
+
+struct GlobalStructPlatform
+{
+    //
+    //     From Cancel.c
+    //
+    BOOL                      s_isCanceled;
+#define s_isCanceled global_plt_struct.s_isCanceled
+    //
+    //     From Clock.c
+    //
+    unsigned long long        s_initClock;
+#define s_initClock global_plt_struct.s_initClock
+    unsigned int              s_adjustRate;
+#define s_adjustRate global_plt_struct.s_adjustRate
+    //
+    //     From LocalityPlat.c
+    //
+    unsigned char             s_locality;
+#define s_locality global_plt_struct.s_locality
+    //
+    //     From Power.c
+    //
+    BOOL                      s_powerLost;
+#define s_powerLost global_plt_struct.s_powerLost
+    //
+    //     From Entropy.c
+    //
+    uint32_t                  lastEntropy;
+#define lastEntropy global_plt_struct.lastEntropy
+    int                       firstValue;
+#define firstValue global_plt_struct.firstValue
+    //
+    //     From PPPlat.c
+    //
+    BOOL   s_physicalPresence;
+#define s_physicalPresence global_plt_struct.s_physicalPresence
+};
+
+LIB_IMPORT extern struct GlobalStructPlatform global_plt_struct;
+
 #endif // _PLATFORM_DATA_H_
