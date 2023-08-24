@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <memory.h>
+#include "PlatformData.h"
 #include "TpmBuildSwitches.h"
 //
 //
@@ -20,8 +21,6 @@
 //           bit block to be generated. Each subsequent generation of an n-bit block shall be compared with the
 //           previously generated block. The test shall fail if any two compared n-bit blocks are equal.”
 //
-extern uint32_t               lastEntropy;
-extern int                    firstValue;
 //
 //
 //          _plat__GetEntropy()

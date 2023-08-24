@@ -4,7 +4,6 @@
 // Family "2.0"
 // Level 00 Revision 01.16
 // October 30, 2014
-
 #ifndef         GLOBAL_H
 #define         GLOBAL_H
 //#define SELF_TEST
@@ -36,11 +35,7 @@
 //     Define these values here if the AlgorithmTests() project is not used
 //
 #ifndef SELF_TEST
-extern ALGORITHM_VECTOR     g_implementedAlgorithms;
-extern ALGORITHM_VECTOR     g_toTest;
 #else
-LIB_IMPORT extern ALGORITHM_VECTOR     g_implementedAlgorithms;
-LIB_IMPORT extern ALGORITHM_VECTOR     g_toTest;
 #endif
 //
 //     These macros are used in CryptUtil() to invoke the incremental self test.
@@ -553,129 +548,6 @@ typedef struct
 extern const UINT16          g_rcIndex[15];
 //
 //
-//          g_exclusiveAuditSession
-//
-//      This location holds the session handle for the current exclusive audit session. If there is no exclusive
-//      audit session, the location is set to TPM_RH_UNASSIGNED.
-//
-extern TPM_HANDLE            g_exclusiveAuditSession;
-//
-//
-//          g_time
-//
-//      This value is the count of milliseconds since the TPM was powered up. This value is initialized at
-//      _TPM_Init().
-//
-extern     UINT64            g_time;
-//
-//
-//          g_phEnable
-//
-//      This is the platform hierarchy control and determines if the platform hierarchy is available. This value is
-//      SET on each TPM2_Startup(). The default value is SET.
-//
-extern BOOL                  g_phEnable;
-//          g_pceReConfig
-//
-//      This value is SET if a TPM2_PCR_Allocate() command successfully executed since the last
-//      TPM2_Startup(). If so, then the next shutdown is required to be Shutdown(CLEAR).
-//
-extern BOOL                   g_pcrReConfig;
-//
-//
-//          g_DRTMHandle
-//
-//      This location indicates the sequence object handle that holds the DRTM sequence data. When not used,
-//      it is set to TPM_RH_UNASSIGNED. A sequence DRTM sequence is started on either _TPM_Init() or
-//      _TPM_Hash_Start().
-//
-extern TPMI_DH_OBJECT         g_DRTMHandle;
-//
-//
-//          g_DrtmPreStartup
-//
-//      This value indicates that an H-CRTM occurred after _TPM_Init() but before TPM2_Startup(). The define
-//      for PRE_STARTUP_FLAG is used to add the g_DrtmPreStartup value to gp_orderlyState at shutdown.
-//      This hack is to avoid adding another NV variable.
-//
-extern BOOL              g_DrtmPreStartup;
-#define PRE_STARTUP_FLAG     0x8000
-//
-//
-//          g_StartupLocality3
-//
-//      This value indicates that a TPM2_Startup() occured at locality 3. Otherwise, it at locality 0. The define for
-//      STARTUP_LOCALITY_3 is to indicate that the startup was not at locality 0. This hack is to avoid adding
-//      another NV variable.
-//
-extern BOOL             g_StartupLocality3;
-#define STARTUP_LOCALITY_3       0x4000
-//
-//
-//       g_updateNV
-//
-//      This flag indicates if NV should be updated at the end of a command. This flag is set to FALSE at the
-//      beginning of each command in ExecuteCommand(). This flag is checked in ExecuteCommand() after the
-//      detailed actions of a command complete. If the command execution was successful and this flag is SET,
-//      any pending NV writes will be committed to NV.
-//
-extern BOOL                   g_updateNV;
-//
-//
-//       g_clearOrderly
-//
-//      This flag indicates if the execution of a command should cause the orderly state to be cleared. This flag
-//      is set to FALSE at the beginning of each command in ExecuteCommand() and is checked in
-//      ExecuteCommand() after the detailed actions of a command complete but before the check of
-//      g_updateNV. If this flag is TRUE, and the orderly state is not SHUTDOWN_NONE, then the orderly state
-//      in NV memory will be changed to SHUTDOWN_NONE.
-//
-extern BOOL                   g_clearOrderly;
-//
-//
-//
-//       g_prevOrderlyState
-//
-//      This location indicates how the TPM was shut down before the most recent TPM2_Startup(). This value,
-//      along with the startup type, determines if the TPM should do a TPM Reset, TPM Restart, or TPM
-//      Resume.
-//
-extern TPM_SU                 g_prevOrderlyState;
-//
-//
-//       g_nvOk
-//
-//      This value indicates if the NV integrity check was successful or not. If not and the failure was severe, then
-//      the TPM would have been put into failure mode after it had been re-manufactured. If the NV failure was in
-//      the area where the state-save data is kept, then this variable will have a value of FALSE indicating that a
-//      TPM2_Startup(CLEAR) is required.
-//
-extern BOOL                   g_nvOk;
-//
-//
-//       g_nvStateRestored
-//
-//      This value indicates if the state of RAM-backed NV indices has been preserved over TPM reset.
-//      If that was the case, the state doesn't need to be re-read from flash and the counters don't need to be rolled
-//      up even after unorderly shutdowns.
-//
-extern BOOL                   g_nvStatePreserved;
-//
-//
-//       g_platformUnique
-//
-//      This location contains the unique value(s) used to identify the TPM. It is loaded on every
-//      _TPM2_Startup() The first value is used to seed the RNG. The second value is used as a vendor
-//      authValue. The value used by the RNG would be the value derived from the chip unique value (such as
-//      fused) with a dependency on the authorities of the code in the TPM boot path. The second would be
-//      derived from the chip unique value with a dependency on the details of the code in the boot path. That is,
-//      the first value depends on the various signers of the code and the second depends on what was signed.
-//      The TPM vendor should not be able to know the first value but they are expected to know the second.
-//
-extern TPM2B_AUTH             g_platformUniqueAuthorities; // Reserved for RNG
-extern TPM2B_AUTH             g_platformUniqueDetails;   // referenced by VENDOR_PERMANENT
-//
-//
 //           Persistent Global Values
 //
 //           Description
@@ -802,7 +674,6 @@ typedef struct
 // value, it will have the format of 00 hh mm ss
    UINT32              firmwareV2;
 } PERSISTENT_DATA;
-extern PERSISTENT_DATA      gp;
 //
 //
 //         ORDERLY_DATA
@@ -833,7 +704,6 @@ typedef struct orderly_data
    DRBG_STATE          drbgState;
 #endif
 } ORDERLY_DATA;
-extern ORDERLY_DATA           go;
 //
 //
 //          STATE_CLEAR_DATA
@@ -867,7 +737,6 @@ typedef struct state_clear_data
 //   an array.
      PCR_AUTHVALUE        pcrAuthValues;
 } STATE_CLEAR_DATA;
-extern STATE_CLEAR_DATA gc;
 //
 //
 //
@@ -954,7 +823,6 @@ typedef struct state_reset_data
    BYTE                 commitArray[16];   // The default reset value is {0}.
 #endif //TPM_ALG_ECC
 } STATE_RESET_DATA;
-extern STATE_RESET_DATA gr;
 //
 //
 //         Global Macro Definitions
@@ -975,129 +843,12 @@ extern STATE_RESET_DATA gr;
 //
 //         Private data
 //
-#if defined SESSION_PROCESS_C || defined GLOBAL_C || defined MANUFACTURE_C
 //
 //      From SessionProcess.c
-//      The following arrays are used to save command sessions information so that the command
-//      handle/session buffer does not have to be preserved for the duration of the command. These arrays are
-//      indexed by the session index in accordance with the order of sessions in the session area of the
-//      command.
-//
-//      Array of the authorization session handles
-//
-extern TPM_HANDLE             s_sessionHandles[MAX_SESSION_NUM];
-//
-//      Array of authorization session attributes
-//
-extern TPMA_SESSION           s_attributes[MAX_SESSION_NUM];
-//
-//      Array of handles authorized by the corresponding authorization sessions; and if none, then
-//      TPM_RH_UNASSIGNED value is used
-//
-extern TPM_HANDLE             s_associatedHandles[MAX_SESSION_NUM];
-//
-//      Array of nonces provided by the caller for the corresponding sessions
-//
-extern TPM2B_NONCE            s_nonceCaller[MAX_SESSION_NUM];
-//
-//      Array of authorization values (HMAC's or passwords) for the corresponding sessions
-//
-extern TPM2B_AUTH             s_inputAuthValues[MAX_SESSION_NUM];
 //
 //      Special value to indicate an undefined session index
 //
 #define                  UNDEFINED_INDEX        (0xFFFF)
-//
-//      Index of the session used for encryption of a response parameter
-//
-extern UINT32                 s_encryptSessionIndex;
-//
-//      Index of the session used for decryption of a command parameter
-//
-extern UINT32                 s_decryptSessionIndex;
-//
-//      Index of a session used for audit
-//
-extern UINT32                 s_auditSessionIndex;
-//
-//      The cpHash for an audit session
-//
-extern TPM2B_DIGEST           s_cpHashForAudit;
-//
-//      The cpHash for command audit
-//
-#ifdef TPM_CC_GetCommandAuditDigest
-extern TPM2B_DIGEST   s_cpHashForCommandAudit;
-#endif
-//
-//      Number of authorization sessions present in the command
-//
-extern UINT32                 s_sessionNum;
-//
-//      Flag indicating if NV update is pending for the lockOutAuthEnabled or failedTries DA parameter
-//
-extern BOOL             s_DAPendingOnNV;
-#endif // SESSION_PROCESS_C
-#if defined DA_C || defined GLOBAL_C || defined MANUFACTURE_C
-//
-//      From DA.c
-//
-//      This variable holds the accumulated time since the last time that failedTries was decremented. This value
-//      is in millisecond.
-//
-extern UINT64            s_selfHealTimer;
-//
-//      This variable holds the accumulated time that the lockoutAuth has been blocked.
-//
-extern UINT64       s_lockoutTimer;
-#endif // DA_C
-#if defined NV_C || defined GLOBAL_C
-//
-//      From NV.c
-//      List of pre-defined address of reserved data
-//
-extern UINT32            s_reservedAddr[NV_RESERVE_LAST];
-//
-//      List of pre-defined reserved data size in byte
-//
-extern UINT32            s_reservedSize[NV_RESERVE_LAST];
-//
-//      Size of data in RAM index buffer
-//
-extern UINT32            s_ramIndexSize;
-//
-//      Reserved RAM space for frequently updated NV Index. The data layout in ram buffer is {NV_handle(),
-//      size of data, data} for each NV index data stored in RAM
-//
-extern BYTE          s_ramIndex[RAM_INDEX_SPACE];
-//
-//      Address of size of RAM index space in NV
-//
-extern UINT32       s_ramIndexSizeAddr;
-//
-//      Address of NV copy of RAM index space
-//
-extern UINT32       s_ramIndexAddr;
-//
-//      Address of maximum counter value; an auxiliary variable to implement NV counters
-//
-extern UINT32       s_maxCountAddr;
-//
-//      Beginning of NV dynamic area; starts right after the s_maxCountAddr and s_evictHandleMapAddr
-//      variables
-//
-extern UINT32       s_evictNvStart;
-//
-//      Beginning of NV dynamic area; also the beginning of the predefined reserved data area.
-//
-extern UINT32       s_evictNvEnd;
-//
-//      NV availability is sampled as the start of each command and stored here so that its value remains
-//      consistent during the command execution
-//
-extern TPM_RC   s_NvStatus;
-#endif
-#if defined OBJECT_C || defined GLOBAL_C
 //
 //      From Object.c
 //
@@ -1108,12 +859,6 @@ typedef struct
    BOOL            occupied;
    ANY_OBJECT          object;
 } OBJECT_SLOT;
-//
-//      This is the memory that holds the loaded objects.
-//
-extern OBJECT_SLOT     s_objects[MAX_LOADED_OBJECTS];
-#endif // OBJECT_C
-#if defined PCR_C || defined GLOBAL_C
 //
 //      From PCR.c
 //
@@ -1149,9 +894,6 @@ typedef struct
     unsigned int        extendLocality : 5;                //   The locality that the PCR
                                                            //   can be extend
 } PCR_Attributes;
-extern PCR          s_pcrs[IMPLEMENTATION_PCR];
-#endif // PCR_C
-#if defined SESSION_C || defined GLOBAL_C
 //
 //      From Session.c
 //      Container for HMAC or policy session tracking information
@@ -1161,7 +903,299 @@ typedef struct
    BOOL                      occupied;
    SESSION                   session;          // session structure
 } SESSION_SLOT;
-extern SESSION_SLOT           s_sessions[MAX_LOADED_SESSIONS];
+
+struct GlobalStruct
+{
+//
+//
+//          g_phEnable
+//
+//      This is the platform hierarchy control and determines if the platform hierarchy is available. This value is
+//      SET on each TPM2_Startup(). The default value is SET.
+//
+   BOOL                      g_phEnable;
+#define g_phEnable global_struct.g_phEnable
+//
+//
+//          g_exclusiveAuditSession
+//
+//      This location holds the session handle for the current exclusive audit session. If there is no exclusive
+//      audit session, the location is set to TPM_RH_UNASSIGNED.
+//
+   TPM_HANDLE              g_exclusiveAuditSession;
+#define g_exclusiveAuditSession global_struct.g_exclusiveAuditSession
+//
+//
+//          g_time
+//
+//      This value is the count of milliseconds since the TPM was powered up. This value is initialized at
+//      _TPM_Init().
+//
+   UINT64                  g_time;
+#define g_time global_struct.g_time
+//          g_pceReConfig
+//
+//      This value is SET if a TPM2_PCR_Allocate() command successfully executed since the last
+//      TPM2_Startup(). If so, then the next shutdown is required to be Shutdown(CLEAR).
+//
+   BOOL                    g_pcrReConfig;
+#define g_pcrReConfig global_struct.g_pcrReConfig
+//
+//
+//          g_DRTMHandle
+//
+//      This location indicates the sequence object handle that holds the DRTM sequence data. When not used,
+//      it is set to TPM_RH_UNASSIGNED. A sequence DRTM sequence is started on either _TPM_Init() or
+//      _TPM_Hash_Start().
+//
+   TPMI_DH_OBJECT          g_DRTMHandle;
+#define g_DRTMHandle global_struct.g_DRTMHandle
+//
+//
+//          g_DrtmPreStartup
+//
+//      This value indicates that an H-CRTM occurred after _TPM_Init() but before TPM2_Startup(). The define
+//      for PRE_STARTUP_FLAG is used to add the g_DrtmPreStartup value to gp_orderlyState at shutdown.
+//      This hack is to avoid adding another NV variable.
+//
+   BOOL                    g_DrtmPreStartup;
+#define g_DrtmPreStartup global_struct.g_DrtmPreStartup
+#define PRE_STARTUP_FLAG     0x8000
+//
+//
+//          g_StartupLocality3
+//
+//      This value indicates that a TPM2_Startup() occured at locality 3. Otherwise, it at locality 0. The define for
+//      STARTUP_LOCALITY_3 is to indicate that the startup was not at locality 0. This hack is to avoid adding
+//      another NV variable.
+//
+   BOOL                    g_StartupLocality3;
+#define g_StartupLocality3 global_struct.g_StartupLocality3
+#define STARTUP_LOCALITY_3       0x4000
+//
+//
+//       g_clearOrderly
+//
+//      This flag indicates if the execution of a command should cause the orderly state to be cleared. This flag
+//      is set to FALSE at the beginning of each command in ExecuteCommand() and is checked in
+//      ExecuteCommand() after the detailed actions of a command complete but before the check of
+//      g_updateNV. If this flag is TRUE, and the orderly state is not SHUTDOWN_NONE, then the orderly state
+//      in NV memory will be changed to SHUTDOWN_NONE.
+//
+   BOOL                    g_clearOrderly;
+#define g_clearOrderly global_struct.g_clearOrderly
+//
+//
+//       g_prevOrderlyState
+//
+//      This location indicates how the TPM was shut down before the most recent TPM2_Startup(). This value,
+//      along with the startup type, determines if the TPM should do a TPM Reset, TPM Restart, or TPM
+//      Resume.
+//
+   TPM_SU                  g_prevOrderlyState;
+#define g_prevOrderlyState global_struct.g_prevOrderlyState
+//
+//
+//       g_updateNV
+//
+//      This flag indicates if NV should be updated at the end of a command. This flag is set to FALSE at the
+//      beginning of each command in ExecuteCommand(). This flag is checked in ExecuteCommand() after the
+//      detailed actions of a command complete. If the command execution was successful and this flag is SET,
+//      any pending NV writes will be committed to NV.
+//
+   BOOL                    g_updateNV;
+#define g_updateNV global_struct.g_updateNV
+//
+//
+//       g_nvOk
+//
+//      This value indicates if the NV integrity check was successful or not. If not and the failure was severe, then
+//      the TPM would have been put into failure mode after it had been re-manufactured. If the NV failure was in
+//      the area where the state-save data is kept, then this variable will have a value of FALSE indicating that a
+//      TPM2_Startup(CLEAR) is required.
+//
+   BOOL                    g_nvOk;
+#define g_nvOk global_struct.g_nvOk
+//
+//
+//       g_nvStateRestored
+//
+//      This value indicates if the state of RAM-backed NV indices has been preserved over TPM reset.
+//      If that was the case, the state doesn't need to be re-read from flash and the counters don't need to be rolled
+//      up even after unorderly shutdowns.
+//
+   BOOL                    g_nvStatePreserved;
+#define g_nvStatePreserved global_struct.g_nvStatePreserved
+//
+//
+//       g_platformUnique
+//
+//      This location contains the unique value(s) used to identify the TPM. It is loaded on every
+//      _TPM2_Startup() The first value is used to seed the RNG. The second value is used as a vendor
+//      authValue. The value used by the RNG would be the value derived from the chip unique value (such as
+//      fused) with a dependency on the authorities of the code in the TPM boot path. The second would be
+//      derived from the chip unique value with a dependency on the details of the code in the boot path. That is,
+//      the first value depends on the various signers of the code and the second depends on what was signed.
+//      The TPM vendor should not be able to know the first value but they are expected to know the second.
+//
+   TPM2B_AUTH              g_platformUniqueDetails;
+#define g_platformUniqueDetails global_struct.g_platformUniqueDetails
+   STATE_CLEAR_DATA        gc;
+#define gc global_struct.gc
+   STATE_RESET_DATA        gr;
+#define gr global_struct.gr
+   PERSISTENT_DATA         gp;
+#define gp global_struct.gp
+   ORDERLY_DATA            go;
+#define go global_struct.go
+//
+//      From SessionProcess.c
+//      The following arrays are used to save command sessions information so that the command
+//      handle/session buffer does not have to be preserved for the duration of the command. These arrays are
+//      indexed by the session index in accordance with the order of sessions in the session area of the
+//      command.
+//
+//      Array of the authorization session handles
+//
+   TPM_HANDLE           s_sessionHandles[MAX_SESSION_NUM];
+#define s_sessionHandles global_struct.s_sessionHandles
+//
+//      Array of authorization session attributes
+//
+   TPMA_SESSION         s_attributes[MAX_SESSION_NUM];
+#define s_attributes global_struct.s_attributes
+//
+//      Array of handles authorized by the corresponding authorization sessions; and if none, then
+//      TPM_RH_UNASSIGNED value is used
+//
+   TPM_HANDLE           s_associatedHandles[MAX_SESSION_NUM];
+#define s_associatedHandles global_struct.s_associatedHandles
+//
+//      Array of nonces provided by the caller for the corresponding sessions
+//
+   TPM2B_NONCE          s_nonceCaller[MAX_SESSION_NUM];
+#define s_nonceCaller global_struct.s_nonceCaller
+//
+//      Array of authorization values (HMAC's or passwords) for the corresponding sessions
+//
+   TPM2B_AUTH           s_inputAuthValues[MAX_SESSION_NUM];
+#define s_inputAuthValues global_struct.s_inputAuthValues
+//
+//      Index of the session used for encryption of a response parameter
+//
+   UINT32               s_encryptSessionIndex;
+#define s_encryptSessionIndex global_struct.s_encryptSessionIndex
+//
+//      Index of the session used for decryption of a command parameter
+//
+   UINT32               s_decryptSessionIndex;
+#define s_decryptSessionIndex global_struct.s_decryptSessionIndex
+//
+//      Index of a session used for audit
+//
+   UINT32               s_auditSessionIndex;
+#define s_auditSessionIndex global_struct.s_auditSessionIndex
+//
+//      The cpHash for an audit session
+//
+   TPM2B_DIGEST         s_cpHashForAudit;
+#define s_cpHashForAudit global_struct.s_cpHashForAudit
+//
+//      Number of authorization sessions present in the command
+//
+   UINT32               s_sessionNum;
+#define s_sessionNum global_struct.s_sessionNum
+//
+//      Flag indicating if NV update is pending for the lockOutAuthEnabled or failedTries DA parameter
+//
+   BOOL                 s_DAPendingOnNV;
+#define s_DAPendingOnNV global_struct.s_DAPendingOnNV
+//
+//      From DA.c
+//
+//      This variable holds the accumulated time since the last time that failedTries was decremented. This value
+//      is in millisecond.
+//
+   UINT64                  s_selfHealTimer;
+#define s_selfHealTimer global_struct.s_selfHealTimer
+//
+//      This variable holds the accumulated time that the lockoutAuth has been blocked.
+//
+   UINT64                  s_lockoutTimer;
+#define s_lockoutTimer global_struct.s_lockoutTimer
+//
+//      From NV.c
+//      List of pre-defined address of reserved data
+//
+   UINT32                  s_reservedAddr[NV_RESERVE_LAST];
+#define s_reservedAddr global_struct.s_reservedAddr
+//
+//      List of pre-defined reserved data size in byte
+//
+   UINT32                  s_reservedSize[NV_RESERVE_LAST];
+#define s_reservedSize global_struct.s_reservedSize
+//
+//      Size of data in RAM index buffer
+//
+   UINT32                  s_ramIndexSize;
+#define s_ramIndexSize global_struct.s_ramIndexSize
+//
+//      Reserved RAM space for frequently updated NV Index. The data layout in ram buffer is {NV_handle(),
+//      size of data, data} for each NV index data stored in RAM
+//
+   BYTE                    s_ramIndex[RAM_INDEX_SPACE];
+#define s_ramIndex global_struct.s_ramIndex
+//
+//      Address of size of RAM index space in NV
+//
+   UINT32                  s_ramIndexSizeAddr;
+#define s_ramIndexSizeAddr global_struct.s_ramIndexSizeAddr
+//
+//      Address of NV copy of RAM index space
+//
+   UINT32                  s_ramIndexAddr;
+#define s_ramIndexAddr global_struct.s_ramIndexAddr
+//
+//      Address of maximum counter value; an auxiliary variable to implement NV counters
+//
+   UINT32                  s_maxCountAddr;
+#define s_maxCountAddr global_struct.s_maxCountAddr
+//
+//      Beginning of NV dynamic area; starts right after the s_maxCountAddr and s_evictHandleMapAddr
+//      variables
+//
+   UINT32                  s_evictNvStart;
+#define s_evictNvStart global_struct.s_evictNvStart
+//
+//      Beginning of NV dynamic area; also the beginning of the predefined reserved data area.
+//
+   UINT32                  s_evictNvEnd;
+#define s_evictNvEnd global_struct.s_evictNvEnd
+//
+//      NV availability is sampled as the start of each command and stored here so that its value remains
+//      consistent during the command execution
+//
+   TPM_RC                  s_NvStatus;
+#define s_NvStatus global_struct.s_NvStatus
+//
+//      From Object.c
+//
+//
+//      This is the memory that holds the loaded objects.
+//
+   OBJECT_SLOT               s_objects[MAX_LOADED_OBJECTS];
+#define s_objects global_struct.s_objects
+//
+//      From PCR.c
+//
+   PCR                       s_pcrs[IMPLEMENTATION_PCR];
+#define s_pcrs global_struct.s_pcrs
+//
+//      From Session.c
+//      Container for HMAC or policy session tracking information
+//
+   SESSION_SLOT              s_sessions[MAX_LOADED_SESSIONS];
+#define s_sessions global_struct.s_sessions
 //
 //
 //
@@ -1169,52 +1203,89 @@ extern SESSION_SLOT           s_sessions[MAX_LOADED_SESSIONS];
 //      The index in conextArray that has the value of the oldest saved session context. When no context is
 //      saved, this will have a value that is greater than or equal to MAX_ACTIVE_SESSIONS.
 //
-extern UINT32                  s_oldestSavedSession;
+   UINT32                    s_oldestSavedSession;
+#define s_oldestSavedSession global_struct.s_oldestSavedSession
 //
 //      The number of available session slot openings. When this is 1, a session can't be created or loaded if the
 //      GAP is maxed out. The exception is that the oldest saved session context can always be loaded
 //      (assuming that there is a space in memory to put it)
 //
-extern int                     s_freeSessionSlots;
-#endif // SESSION_C
+   int                       s_freeSessionSlots;
+#define s_freeSessionSlots global_struct.s_freeSessionSlots
 //
 //      From Manufacture.c
 //
-extern BOOL              g_manufactured;
-#if defined POWER_C || defined GLOBAL_C
+   BOOL                      g_manufactured;
+#define g_manufactured global_struct.g_manufactured
 //
 //      From Power.c
 //      This value indicates if a TPM2_Startup() commands has been receive since the power on event. This
 //      flag is maintained in power simulation module because this is the only place that may reliably set this flag
 //      to FALSE.
 //
-extern BOOL              s_initialized;
-#endif // POWER_C
-#if defined MEMORY_LIB_C || defined GLOBAL_C
+   BOOL                      s_initialized;
+#define s_initialized global_struct.s_initialized
+//
+//          MemoryLib.c
+//
+   BYTE     s_responseBuffer[MAX_RESPONSE_SIZE];// response buffer
+#define s_responseBuffer global_struct.s_responseBuffer
+//
+//      From TPMFail.c
+//
+   BOOL                      g_forceFailureMode;
+#define g_forceFailureMode global_struct.g_forceFailureMode
+   BOOL                      g_inFailureMode;
+#define g_inFailureMode global_struct.g_inFailureMode
+   UINT32                    s_failFunction;
+#define s_failFunction global_struct.s_failFunction
+   UINT32                    s_failLine;
+#define s_failLine global_struct.s_failLine
+   UINT32                    s_failCode;
+#define s_failCode global_struct.s_failCode
 //
 //      The s_actionOutputBuffer should not be modifiable by the host system until the TPM has returned a
 //      response code. The s_actionOutputBuffer should not be accessible until response parameter encryption,
 //      if any, is complete.
 //
-extern   UINT32   s_actionInputBuffer[1024];          // action input buffer
-extern   UINT32   s_actionOutputBuffer[1024];         // action output buffer
-extern   BYTE     s_responseBuffer[MAX_RESPONSE_SIZE];// response buffer
-#endif   // MEMORY_LIB_C
-//
-//      From TPMFail.c
+#ifndef EMBEDDED_MODE
+   UINT32   s_actionInputBuffer[1024];          // action input buffer
+#define s_actionInputBuffer global_struct.s_actionInputBuffer
+   UINT32   s_actionOutputBuffer[1024];         // action output buffer
+#define s_actionOutputBuffer global_struct.s_actionOutputBuffer
+#endif  // EMBEDDED_MODE   ^^^ not defined
+
 //      This value holds the address of the string containing the name of the function in which the failure
 //      occurred. This address value isn't useful for anything other than helping the vendor to know in which file
 //      the failure occurred.
 //
 #ifndef EMBEDDED_MODE
-extern jmp_buf   g_jumpBuffer;          //           the jump buffer
+   jmp_buf                   g_jumpBuffer;
+#define g_jumpBuffer global_struct.g_jumpBuffer
+#endif  // EMBEDDED_MODE   ^^^ not defined
+
+//
+//      The cpHash for command audit
+//
+#ifdef TPM_CC_GetCommandAuditDigest
+   TPM2B_DIGEST         s_cpHashForCommandAudit;
+#define s_cpHashForCommandAudit global_struct.s_cpHashForCommandAudit
 #endif
-extern BOOL      g_inFailureMode;       //           Indicates that the TPM is in failure mode
-extern BOOL      g_forceFailureMode;    //           flag to force failure mode during test
-#if defined TPM_FAIL_C || defined GLOBAL_C           || 1
-extern UINT32    s_failFunction;
-extern UINT32    s_failLine;            //           the line in the file at which
-                                       //           the error was signaled
-extern UINT32    s_failCode;            //           the error code used
-#endif // TPM_FAIL_C
+
+//
+//          Crypto Self-Test Values
+//
+//     Define these values here if the AlgorithmTests() project is not used
+//
+#ifndef SELF_TEST
+   ALGORITHM_VECTOR          g_implementedAlgorithms;
+#define g_implementedAlgorithms global_struct.g_implementedAlgorithms
+   ALGORITHM_VECTOR          g_toTest;
+#define g_toTest global_struct.g_toTest
+#endif
+
+};
+
+LIB_IMPORT extern struct GlobalStruct global_struct;
+
 #endif // GLOBAL_H
