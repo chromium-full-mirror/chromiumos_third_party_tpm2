@@ -12,6 +12,7 @@ extern "C" {
 #include <tpm2/BaseTypes.h>
 #include <tpm2/ExecCommand_fp.h>
 #include <tpm2/GetCommandCodeString_fp.h>
+#include <tpm2/GlobalStateCleanup_fp.h>
 #include <tpm2/Platform.h>
 #include <tpm2/tpm_generated.h>
 #include <tpm2/tpm_manufacture.h>
