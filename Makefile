@@ -70,6 +70,7 @@ SOURCES += GetSessionAuditDigest.c
 SOURCES += GetTestResult.c
 SOURCES += GetTime.c
 SOURCES += Global.c
+SOURCES += GlobalStateCleanup.c
 SOURCES += HMAC.c
 SOURCES += HMAC_Start.c
 SOURCES += Handle.c
