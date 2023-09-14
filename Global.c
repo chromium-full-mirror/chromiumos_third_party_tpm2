@@ -41,7 +41,6 @@ ORDERLY_DATA            go;
 //
 //          SessionProcess.c
 //
-#ifndef __IGNORE_STATE__           // DO NOT DEFINE THIS VALUE
 //
 //     These values do not need to be retained between commands.
 //
@@ -55,7 +54,6 @@ UINT32               s_decryptSessionIndex;
 UINT32               s_auditSessionIndex;
 TPM2B_DIGEST         s_cpHashForAudit;
 UINT32               s_sessionNum;
-#endif // __IGNORE_STATE__
 BOOL                 s_DAPendingOnNV;
 #ifdef TPM_CC_GetCommandAuditDigest
 TPM2B_DIGEST         s_cpHashForCommandAudit;
@@ -116,13 +114,11 @@ BOOL                      s_initialized = FALSE;
 //     response code. The s_actionOutputBuffer should not be accessible until response parameter encryption,
 //     if any, is complete. This memory is not used between commands
 //
-#ifndef __IGNORE_STATE__        // DO NOT DEFINE THIS VALUE
 #ifndef EMBEDDED_MODE
 UINT32   s_actionInputBuffer[1024];          // action input buffer
 UINT32   s_actionOutputBuffer[1024];         // action output buffer
 #endif  // EMBEDDED_MODE   ^^^ not defined
 BYTE     s_responseBuffer[MAX_RESPONSE_SIZE];// response buffer
-#endif  // __IGNORE_STATE__   ^^^ not defined
 //
 //
 //         SelfTest.c
