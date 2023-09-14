@@ -17,7 +17,6 @@ BOOL ReadVarBytes(SOCKET s, char* buffer, UINT32* BytesReceived, int MaxLen);
 BOOL WriteVarBytes(SOCKET s, char *buffer, int BytesToSend);
 BOOL WriteBytes(SOCKET s, char* buffer, int NumBytes);
 BOOL WriteUINT32(SOCKET s, UINT32 val);
-#ifndef __IGNORE_STATE__
 static UINT32 ServerVersion = 1;
 #define MAX_BUFFER 1048576
 char InputBuffer[MAX_BUFFER];        //The input data buffer for the simulator.
@@ -28,7 +27,6 @@ struct {
    UINT32      largestResponseSize;
    UINT32      largestResponse;
 } CommandResponseSizes = {0};
-#endif // __IGNORE_STATE___
 //
 //
 //          Functions
