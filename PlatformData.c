@@ -9,4 +9,4 @@
 #include        "Platform.h"
 #include        "PlatformData.h"
 
-struct GlobalStructPlatform global_plt_struct;
+struct GlobalStructPlatform global_plt_struct __attribute__((section(".bss.Tpm2_common")));;
