@@ -374,7 +374,7 @@ $(obj)/$(OBJ_PREFIX)%.o: %.c | $(obj)
 		-MP -o $(basename $@).o $<
 
 %.cp.o: %.o
-	$(Q)$(OBJCOPY) --rename-section .bss=.bss.Tpm2_common $< $@
+	cp $< $@
 
 .PHONY: clean
 clean:
