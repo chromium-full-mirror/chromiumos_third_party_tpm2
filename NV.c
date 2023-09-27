@@ -14,6 +14,16 @@
 typedef        UINT32              NV_ITER;              // type of a NV iterator
 #define        NV_ITER_INIT        0xFFFFFFFF            // initial value to start an
                                                         // iterator
+
+//      List of pre-defined address of reserved data
+static const UINT16 s_reservedAddr[NV_RESERVE_LAST];
+
+//       List of pre-defined reserved data size in byte
+static const UINT16 s_reservedSize[NV_RESERVE_LAST];
+
+//      Address of size of RAM index space in NV
+static const UINT32 s_ramIndexSizeAddr;
+
 //
 //
 //           NV Utility Functions
@@ -521,6 +531,139 @@ NvCleanBadFromRAM()
         g_updateNV = TRUE;
     }
 }
+
+static const UINT16 s_reservedSize[NV_RESERVE_LAST] = {
+    [NV_DISABLE_CLEAR] = sizeof(gp.disableClear),
+    [NV_OWNER_ALG] = sizeof(gp.ownerAlg),
+    [NV_ENDORSEMENT_ALG] = sizeof(gp.endorsementAlg),
+    [NV_LOCKOUT_ALG] = sizeof(gp.lockoutAlg),
+    [NV_OWNER_POLICY] = sizeof(gp.ownerPolicy),
+    [NV_ENDORSEMENT_POLICY] = sizeof(gp.endorsementPolicy),
+    [NV_LOCKOUT_POLICY] = sizeof(gp.lockoutPolicy),
+    [NV_OWNER_AUTH] = sizeof(gp.ownerAuth),
+    [NV_ENDORSEMENT_AUTH] = sizeof(gp.endorsementAuth),
+    [NV_LOCKOUT_AUTH] = sizeof(gp.lockoutAuth),
+    [NV_EP_SEED] = sizeof(gp.EPSeed),
+    [NV_SP_SEED] = sizeof(gp.SPSeed),
+    [NV_PP_SEED] = sizeof(gp.PPSeed),
+    [NV_PH_PROOF] = sizeof(gp.phProof),
+    [NV_SH_PROOF] = sizeof(gp.shProof),
+    [NV_EH_PROOF] = sizeof(gp.ehProof),
+    [NV_TOTAL_RESET_COUNT] = sizeof(gp.totalResetCount),
+    [NV_RESET_COUNT] = sizeof(gp.resetCount),
+    [NV_PCR_POLICIES] = sizeof(gp.pcrPolicies),
+    [NV_PCR_ALLOCATED] = sizeof(gp.pcrAllocated),
+    [NV_PP_LIST] = sizeof(gp.ppList),
+    [NV_FAILED_TRIES] = sizeof(gp.failedTries),
+    [NV_MAX_TRIES] = sizeof(gp.maxTries),
+    [NV_RECOVERY_TIME] = sizeof(gp.recoveryTime),
+    [NV_LOCKOUT_RECOVERY] = sizeof(gp.lockoutRecovery),
+    [NV_LOCKOUT_AUTH_ENABLED] = sizeof(gp.lockOutAuthEnabled),
+    [NV_ORDERLY] = sizeof(gp.orderlyState),
+    [NV_AUDIT_COMMANDS] = sizeof(gp.auditComands),
+    [NV_AUDIT_HASH_ALG] = sizeof(gp.auditHashAlg),
+    [NV_AUDIT_COUNTER] = sizeof(gp.auditCounter),
+    [NV_ALGORITHM_SET] = sizeof(gp.algorithmSet),
+    [NV_FIRMWARE_V1] = sizeof(gp.firmwareV1),
+    [NV_FIRMWARE_V2] = sizeof(gp.firmwareV2),
+    [NV_ORDERLY_DATA] = sizeof(go),
+    [NV_STATE_CLEAR] = sizeof(gc),
+    [NV_STATE_RESET] = sizeof(gr)
+    };
+
+// PERSISTENT_DATA struct declares certain fields as UINT32 or UINT64, thus
+// preventing use of offsetof(PERSISTENT_DATA, field) directly as we need to
+// preserve nvmem layout for compatibility. So, declare an intermediate struct
+// to follow nvmem layout
+struct NV_LAYOUT {
+    BYTE disableClear[sizeof(gp.disableClear)];
+    BYTE ownerAlg[sizeof(gp.ownerAlg)];
+    BYTE endorsementAlg[sizeof(gp.endorsementAlg)];
+    BYTE lockoutAlg[sizeof(gp.lockoutAlg)];
+    BYTE ownerPolicy[sizeof(gp.ownerPolicy)];
+    BYTE endorsementPolicy[sizeof(gp.endorsementPolicy)];
+    BYTE lockoutPolicy[sizeof(gp.lockoutPolicy)];
+    BYTE ownerAuth[sizeof(gp.ownerAuth)];
+    BYTE endorsementAuth[sizeof(gp.endorsementAuth)];
+    BYTE lockoutAuth[sizeof(gp.lockoutAuth)];
+    BYTE EPSeed[sizeof(gp.EPSeed)];
+    BYTE SPSeed[sizeof(gp.SPSeed)];
+    BYTE PPSeed[sizeof(gp.PPSeed)];
+    BYTE phProof[sizeof(gp.phProof)];
+    BYTE shProof[sizeof(gp.shProof)];
+    BYTE ehProof[sizeof(gp.ehProof)];
+    BYTE totalResetCount[sizeof(gp.totalResetCount)];
+    BYTE resetCount[sizeof(gp.resetCount)];
+    BYTE pcrPolicies[sizeof(gp.pcrPolicies)];
+    BYTE pcrAllocated[sizeof(gp.pcrAllocated)];
+    BYTE ppList[sizeof(gp.ppList)];
+    BYTE failedTries[sizeof(gp.failedTries)];
+    BYTE maxTries[sizeof(gp.maxTries)];
+    BYTE recoveryTime[sizeof(gp.recoveryTime)];
+    BYTE lockoutRecovery[sizeof(gp.lockoutRecovery)];
+    BYTE lockOutAuthEnabled[sizeof(gp.lockOutAuthEnabled)];
+    BYTE orderlyState[sizeof(gp.orderlyState)];
+    BYTE auditComands[sizeof(gp.auditComands)];
+    BYTE auditHashAlg[sizeof(gp.auditHashAlg)];
+    BYTE auditCounter[sizeof(gp.auditCounter)];
+    BYTE algorithmSet[sizeof(gp.algorithmSet)];
+    BYTE firmwareV1[sizeof(gp.firmwareV1)];
+    BYTE firmwareV2[sizeof(gp.firmwareV2)];
+    BYTE _go[sizeof(go)];
+    BYTE _gc[sizeof(gc)];
+    BYTE _gr[sizeof(gr)];
+};
+
+// Initialize reserved data address. In this implementation, reserved data
+// is stored at the start of NV memory
+//     reservedAddr = 0;
+//     for(i = 0; i < NV_RESERVE_LAST; i++)
+//     {
+//         s_reservedAddr[i] = reservedAddr;
+//         reservedAddr += s_reservedSize[i];
+//     }
+//     s_ramIndexSizeAddr = reservedAddr;
+static const UINT16 s_reservedAddr[NV_RESERVE_LAST] = {
+    [NV_DISABLE_CLEAR] = offsetof(struct NV_LAYOUT, disableClear),
+    [NV_OWNER_ALG] = offsetof(struct NV_LAYOUT, ownerAlg),
+    [NV_ENDORSEMENT_ALG] = offsetof(struct NV_LAYOUT, endorsementAlg),
+    [NV_LOCKOUT_ALG] = offsetof(struct NV_LAYOUT, lockoutAlg),
+    [NV_OWNER_POLICY] = offsetof(struct NV_LAYOUT, ownerPolicy),
+    [NV_ENDORSEMENT_POLICY] = offsetof(struct NV_LAYOUT, endorsementPolicy),
+    [NV_LOCKOUT_POLICY] = offsetof(struct NV_LAYOUT, lockoutPolicy),
+    [NV_OWNER_AUTH] = offsetof(struct NV_LAYOUT, ownerAuth),
+    [NV_ENDORSEMENT_AUTH] = offsetof(struct NV_LAYOUT, endorsementAuth),
+    [NV_LOCKOUT_AUTH] = offsetof(struct NV_LAYOUT, lockoutAuth),
+    [NV_EP_SEED] = offsetof(struct NV_LAYOUT, EPSeed),
+    [NV_SP_SEED] = offsetof(struct NV_LAYOUT, SPSeed),
+    [NV_PP_SEED] = offsetof(struct NV_LAYOUT, PPSeed),
+    [NV_PH_PROOF] = offsetof(struct NV_LAYOUT, phProof),
+    [NV_SH_PROOF] = offsetof(struct NV_LAYOUT, shProof),
+    [NV_EH_PROOF] = offsetof(struct NV_LAYOUT, ehProof),
+    [NV_TOTAL_RESET_COUNT] = offsetof(struct NV_LAYOUT, totalResetCount),
+    [NV_RESET_COUNT] = offsetof(struct NV_LAYOUT, resetCount),
+    [NV_PCR_POLICIES] = offsetof(struct NV_LAYOUT, pcrPolicies),
+    [NV_PCR_ALLOCATED] = offsetof(struct NV_LAYOUT, pcrAllocated),
+    [NV_PP_LIST] = offsetof(struct NV_LAYOUT, ppList),
+    [NV_FAILED_TRIES] = offsetof(struct NV_LAYOUT, failedTries),
+    [NV_MAX_TRIES] = offsetof(struct NV_LAYOUT, maxTries),
+    [NV_RECOVERY_TIME] = offsetof(struct NV_LAYOUT, recoveryTime),
+    [NV_LOCKOUT_RECOVERY] = offsetof(struct NV_LAYOUT, lockoutRecovery),
+    [NV_LOCKOUT_AUTH_ENABLED] = offsetof(struct NV_LAYOUT, lockOutAuthEnabled),
+    [NV_ORDERLY] = offsetof(struct NV_LAYOUT, orderlyState),
+    [NV_AUDIT_COMMANDS] = offsetof(struct NV_LAYOUT, auditComands),
+    [NV_AUDIT_HASH_ALG] = offsetof(struct NV_LAYOUT, auditHashAlg),
+    [NV_AUDIT_COUNTER] = offsetof(struct NV_LAYOUT, auditCounter),
+    [NV_ALGORITHM_SET] = offsetof(struct NV_LAYOUT, algorithmSet),
+    [NV_FIRMWARE_V1] = offsetof(struct NV_LAYOUT, firmwareV1),
+    [NV_FIRMWARE_V2] = offsetof(struct NV_LAYOUT, firmwareV2),
+    [NV_ORDERLY_DATA] = offsetof(struct NV_LAYOUT, _go),
+    [NV_STATE_CLEAR] = offsetof(struct NV_LAYOUT, _gc),
+    [NV_STATE_RESET] = offsetof(struct NV_LAYOUT, _gr),
+};
+
+static const UINT32 s_ramIndexSizeAddr = sizeof(struct NV_LAYOUT);
+
 //
 //
 //
@@ -535,56 +678,9 @@ NvInitStatic(
     void
     )
 {
-    UINT16         i;
-    UINT32         reservedAddr;
-    s_reservedSize[NV_DISABLE_CLEAR] = sizeof(gp.disableClear);
-    s_reservedSize[NV_OWNER_ALG] = sizeof(gp.ownerAlg);
-    s_reservedSize[NV_ENDORSEMENT_ALG] = sizeof(gp.endorsementAlg);
-    s_reservedSize[NV_LOCKOUT_ALG] = sizeof(gp.lockoutAlg);
-    s_reservedSize[NV_OWNER_POLICY] = sizeof(gp.ownerPolicy);
-    s_reservedSize[NV_ENDORSEMENT_POLICY] = sizeof(gp.endorsementPolicy);
-    s_reservedSize[NV_LOCKOUT_POLICY] = sizeof(gp.lockoutPolicy);
-    s_reservedSize[NV_OWNER_AUTH] = sizeof(gp.ownerAuth);
-    s_reservedSize[NV_ENDORSEMENT_AUTH] = sizeof(gp.endorsementAuth);
-    s_reservedSize[NV_LOCKOUT_AUTH] = sizeof(gp.lockoutAuth);
-    s_reservedSize[NV_EP_SEED] = sizeof(gp.EPSeed);
-    s_reservedSize[NV_SP_SEED] = sizeof(gp.SPSeed);
-    s_reservedSize[NV_PP_SEED] = sizeof(gp.PPSeed);
-    s_reservedSize[NV_PH_PROOF] = sizeof(gp.phProof);
-    s_reservedSize[NV_SH_PROOF] = sizeof(gp.shProof);
-    s_reservedSize[NV_EH_PROOF] = sizeof(gp.ehProof);
-    s_reservedSize[NV_TOTAL_RESET_COUNT] = sizeof(gp.totalResetCount);
-    s_reservedSize[NV_RESET_COUNT] = sizeof(gp.resetCount);
-    s_reservedSize[NV_PCR_POLICIES] = sizeof(gp.pcrPolicies);
-    s_reservedSize[NV_PCR_ALLOCATED] = sizeof(gp.pcrAllocated);
-    s_reservedSize[NV_PP_LIST] = sizeof(gp.ppList);
-    s_reservedSize[NV_FAILED_TRIES] = sizeof(gp.failedTries);
-    s_reservedSize[NV_MAX_TRIES] = sizeof(gp.maxTries);
-    s_reservedSize[NV_RECOVERY_TIME] = sizeof(gp.recoveryTime);
-    s_reservedSize[NV_LOCKOUT_RECOVERY] = sizeof(gp.lockoutRecovery);
-    s_reservedSize[NV_LOCKOUT_AUTH_ENABLED] = sizeof(gp.lockOutAuthEnabled);
-    s_reservedSize[NV_ORDERLY] = sizeof(gp.orderlyState);
-    s_reservedSize[NV_AUDIT_COMMANDS] = sizeof(gp.auditComands);
-    s_reservedSize[NV_AUDIT_HASH_ALG] = sizeof(gp.auditHashAlg);
-    s_reservedSize[NV_AUDIT_COUNTER] = sizeof(gp.auditCounter);
-    s_reservedSize[NV_ALGORITHM_SET] = sizeof(gp.algorithmSet);
-    s_reservedSize[NV_FIRMWARE_V1] = sizeof(gp.firmwareV1);
-    s_reservedSize[NV_FIRMWARE_V2] = sizeof(gp.firmwareV2);
-    s_reservedSize[NV_ORDERLY_DATA] = sizeof(go);
-    s_reservedSize[NV_STATE_CLEAR] = sizeof(gc);
-    s_reservedSize[NV_STATE_RESET] = sizeof(gr);
-    // Initialize reserved data address. In this implementation, reserved data
-    // is stored at the start of NV memory
-    reservedAddr = 0;
-    for(i = 0; i < NV_RESERVE_LAST; i++)
-    {
-        s_reservedAddr[i] = reservedAddr;
-        reservedAddr += s_reservedSize[i];
-    }
     // Initialize auxiliary variable space for index/evict implementation.
     // Auxiliary variables are stored after reserved data area
     // RAM index copy starts at the beginning
-    s_ramIndexSizeAddr = reservedAddr;
     s_ramIndexAddr = s_ramIndexSizeAddr + sizeof(UINT32);
     // Maximum counter value
     s_maxCountAddr = s_ramIndexAddr + RAM_INDEX_SPACE;
