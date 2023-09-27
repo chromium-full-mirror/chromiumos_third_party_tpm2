@@ -448,6 +448,7 @@ typedef enum
 {
 // Entries below mirror the PERSISTENT_DATA structure. These values are written
 // to NV as individual items.
+// Ensure consistency with s_reservedSize and s_reservedAddr definitions in NV.c.
    // hierarchy
    NV_DISABLE_CLEAR,
    NV_OWNER_ALG,
@@ -560,6 +561,7 @@ extern const UINT16          g_rcIndex[15];
 //      This structure holds the persistent values that only change as a consequence of a specific Protected
 //      Capability and are not affected by TPM power events (TPM2_Startup() or TPM2_Shutdown().
 //
+// Ensure consistency with s_reservedSize and s_reservedAddr definitions in NV.c.
 typedef struct
 {
 //*********************************************************************************
@@ -1123,17 +1125,7 @@ struct GlobalStruct
 //
    UINT64                  s_lockoutTimer;
 #define s_lockoutTimer global_struct.s_lockoutTimer
-//
-//      From NV.c
-//      List of pre-defined address of reserved data
-//
-   UINT32                  s_reservedAddr[NV_RESERVE_LAST];
-#define s_reservedAddr global_struct.s_reservedAddr
-//
-//      List of pre-defined reserved data size in byte
-//
-   UINT32                  s_reservedSize[NV_RESERVE_LAST];
-#define s_reservedSize global_struct.s_reservedSize
+
 //
 //      Size of data in RAM index buffer
 //
@@ -1145,11 +1137,7 @@ struct GlobalStruct
 //
    BYTE                    s_ramIndex[RAM_INDEX_SPACE];
 #define s_ramIndex global_struct.s_ramIndex
-//
-//      Address of size of RAM index space in NV
-//
-   UINT32                  s_ramIndexSizeAddr;
-#define s_ramIndexSizeAddr global_struct.s_ramIndexSizeAddr
+
 //
 //      Address of NV copy of RAM index space
 //
