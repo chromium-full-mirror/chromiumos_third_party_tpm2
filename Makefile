@@ -374,7 +374,8 @@ $(obj)/$(OBJ_PREFIX)%.o: %.c | $(obj)
 		-MP -o $(basename $@).o $<
 
 %.cp.o: %.o
-	cp $< $@
+	@echo '  TPM2.CP $(notdir $@)'
+	$(Q)cp $< $@
 
 .PHONY: clean
 clean:
