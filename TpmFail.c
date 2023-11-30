@@ -66,9 +66,7 @@ typedef union {
 //                     structure is not relevant outside of the execution of a single command (when the TPM is in failure mode. There
 //                     is no compelling reason to move all the typedefs to Global.h and this structure to Global.c.
 //
-#ifndef __IGNORE_STATE__ // Don't define this value
 static BYTE response[sizeof(RESPONSES)];
-#endif
 //
 //
 //          Local Functions

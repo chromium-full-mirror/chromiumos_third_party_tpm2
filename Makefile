@@ -70,6 +70,7 @@ SOURCES += GetSessionAuditDigest.c
 SOURCES += GetTestResult.c
 SOURCES += GetTime.c
 SOURCES += Global.c
+SOURCES += GlobalStateCleanup.c
 SOURCES += HMAC.c
 SOURCES += HMAC_Start.c
 SOURCES += Handle.c
@@ -373,7 +374,8 @@ $(obj)/$(OBJ_PREFIX)%.o: %.c | $(obj)
 		-MP -o $(basename $@).o $<
 
 %.cp.o: %.o
-	$(Q)$(OBJCOPY) --rename-section .bss=.bss.Tpm2_common $< $@
+	@echo '  TPM2.CP $(notdir $@)'
+	$(Q)cp $< $@
 
 .PHONY: clean
 clean:
