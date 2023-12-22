@@ -2646,8 +2646,8 @@ void NvGetReserved(UINT32 index, NV_RESERVED_ITEM *ri)
      * with the size equal 4 + the value stored at s_ramIndexSize.
      */
     _plat__NvMemoryRead(s_ramIndexSizeAddr, sizeof(UINT32), &indexSize);
-    if (indexSize == ~0)
-      indexSize = 0; /* Must be starting with empty flash memeory. */
+    if (indexSize > RAM_INDEX_SPACE)
+      indexSize = 0; /* Must be starting with empty flash memory or bug. */
     ri->offset = s_ramIndexSizeAddr;
     ri->size = indexSize + sizeof(indexSize);
     return;
