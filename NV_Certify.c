@@ -56,10 +56,19 @@ TPM2_NV_Certify(
    if(result != TPM_RC_SUCCESS)
        return result;
 
-   // See if the range to be certified is out of the bounds of the defined
-   // Index
-   if((in->size + in->offset) > nvIndex.publicArea.dataSize)
-       return TPM_RC_NV_RANGE;
+    // make sure that the selection is within the range of the Index (cast to avoid
+    // any wrap issues with addition)
+    if((UINT32)in->size + (UINT32)in->offset > (UINT32)nvIndex.publicArea.dataSize)
+        return TPM_RC_NV_RANGE;
+
+    // Make sure the data will fit the return buffer.
+    // NOTE: This check may be modified if the output buffer will not hold the
+    // maximum sized NV buffer as part of the certified data. The difference in
+    // size could be substantial if the signature scheme was produced a large
+    // signature (e.g., RSA 4096).
+    if(in->size > MAX_NV_BUFFER_SIZE)
+        return TPM_RC_VALUE + RC_NV_Certify_size;
+
 
 // Command Output
 
