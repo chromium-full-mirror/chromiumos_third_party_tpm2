@@ -159,6 +159,12 @@ TPM2_NV_DefineSpace(
   if(NvIsUndefinedIndex(in->publicInfo.t.nvPublic.nvIndex))
       return TPM_RC_NV_DEFINED;
 
+  // Make sure that the TPMA_NV_WRITEALL is not set if the index size is larger
+  // than the allowed NV buffer size.
+  if(   in->publicInfo.t.nvPublic.dataSize > MAX_NV_BUFFER_SIZE
+     && in->publicInfo.t.nvPublic.attributes.TPMA_NV_WRITEALL == SET)
+      return TPM_RC_SIZE + RC_NV_DefineSpace_publicInfo;
+
 // Internal Data Update
    // define the space. A TPM_RC_NV_SPACE error may be returned at this point
    result = NvDefineIndex(&in->publicInfo.t.nvPublic, &in->auth);
