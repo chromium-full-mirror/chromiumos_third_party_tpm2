@@ -56,9 +56,13 @@ TPM2_NV_Write(
       || nvIndex.publicArea.attributes.TPMA_NV_EXTEND == SET)
        return TPM_RC_ATTRIBUTES;
 
-   // Too much data
-   if((in->data.t.size + in->offset) > nvIndex.publicArea.dataSize)
-       return TPM_RC_NV_RANGE;
+    // Make sure that the offset is not too large
+    if(in->offset > nvIndex.publicArea.dataSize)
+        return TPM_RC_VALUE + RC_NV_Write_offset;
+
+    // Make sure that the selection is within the range of the Index
+    if(in->data.t.size > (nvIndex.publicArea.dataSize - in->offset))
+        return TPM_RC_NV_RANGE;
 
    // If this index requires a full sized write, make sure that input range is
    // full sized
