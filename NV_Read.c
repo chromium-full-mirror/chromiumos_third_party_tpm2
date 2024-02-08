@@ -40,9 +40,17 @@ TPM2_NV_Read(
    if(result != TPM_RC_SUCCESS)
        return result;
 
-   // Too much data
-   if((in->size + in->offset) > nvIndex.publicArea.dataSize)
-       return TPM_RC_NV_RANGE;
+    // Make sure the data will fit the return buffer
+    if( in->size > MAX_NV_BUFFER_SIZE)
+        return TPM_RC_VALUE + RC_NV_Read_size;
+
+    // Verify that the offset is not too large
+    if(in->offset > nvIndex.publicArea.dataSize)
+        return TPM_RC_VALUE + RC_NV_Read_offset;
+
+    // Make sure that the selection is within the range of the Index
+    if(in->size > (nvIndex.publicArea.dataSize - in->offset))
+        return TPM_RC_NV_RANGE;
 
 // Command Output
 
