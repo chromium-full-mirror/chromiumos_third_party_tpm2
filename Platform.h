@@ -420,9 +420,12 @@ _plat__GetFwVersion(
 );
 
 // A function to call after every successful TPM2_Startup.
+//
+// Argument is set to true in case TPM state is reset during processing this
+// startup request.
 LIB_EXPORT void
 _plat__StartupCallback(
-    void
+    BOOL shall_reset_state
 );
 
 //
