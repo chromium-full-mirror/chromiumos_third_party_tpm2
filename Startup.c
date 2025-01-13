@@ -170,7 +170,7 @@ TPM2_Startup(
    g_DrtmPreStartup = FALSE;
 
 #ifdef EMBEDDED_MODE
-   _plat__StartupCallback();
+   _plat__StartupCallback((startup == SU_RESET) || (startup == SU_RESTART));
 #endif
 
    return TPM_RC_SUCCESS;
