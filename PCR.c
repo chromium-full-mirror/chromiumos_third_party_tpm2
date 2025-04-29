@@ -740,6 +740,8 @@ PCRExtend(
           // If PCR does not belong to TCB group, increment PCR counter
           if(!PCRBelongsTCBGroup(handle))
               gr.pcrCounter++;
+
+       _plat__PCRUpdated(pcr);
    }
    return;
 }
