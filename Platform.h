@@ -456,6 +456,10 @@ _plat__NvUpdateAllowed(uint32_t handle);
 LIB_EXPORT void
 _plat__NvInformIndexDataChanged(uint32_t handle);
 
+// A function to inform CR50 that NvIndexData (handle) has been changed.
+LIB_EXPORT void
+_plat__PCRUpdated(uint32_t index);
+
 int uart_printf(const char *format, ...);
 #define ecprintf(format, args...) uart_printf(format, ## args);
 
