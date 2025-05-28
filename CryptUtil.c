@@ -633,6 +633,9 @@ CryptSignHMAC(
 //
    HMAC_STATE           hmacState;
    UINT32               digestSize;
+
+   if (signature->sigAlg != TPM_ALG_HMAC)
+        return TPM_RC_SCHEME;
    // HMAC algorithm self testing code may be inserted here
    digestSize = CryptStartHMAC2B(scheme->details.hmac.hashAlg,
                                  &signKey->sensitive.sensitive.bits.b,
@@ -3337,10 +3340,13 @@ CryptSelectSignScheme(
         {
              // "parms" defined to avoid long code lines.
              TPMU_PUBLIC_PARMS    *parms = &publicArea->parameters;
-             if(CryptIsAsymAlgorithm(publicArea->type))
-                 objectScheme = (TPMT_SIG_SCHEME *)&parms->asymDetail.scheme;
-             else
-                 objectScheme = (TPMT_SIG_SCHEME *)&parms->keyedHashDetail.scheme;
+             if (CryptIsAsymAlgorithm(publicArea->type)) {
+               objectScheme = (TPMT_SIG_SCHEME *)&parms->asymDetail.scheme;
+             } else if (publicArea->type == TPM_ALG_KEYEDHASH) {
+               objectScheme = (TPMT_SIG_SCHEME *)&parms->keyedHashDetail.scheme;
+             } else {
+               return TPM_RC_SCHEME;
+             }
                // If the object doesn't have a default scheme, then use the
                // input scheme.
                if(objectScheme->scheme == TPM_ALG_NULL)
