@@ -362,3 +362,16 @@ _plat__NvUpdateAllowed(uint32_t handle)
 {
    return TRUE;
 }
+
+//
+//
+//      _plat__PCRUpdated()
+//
+// Always returns TRUE. No platform-specific reasons to prevent updates.
+//
+LIB_EXPORT void
+_plat__PCRUpdated(uint32_t index)
+{
+   /* Do nothing */
+   return;
+}
