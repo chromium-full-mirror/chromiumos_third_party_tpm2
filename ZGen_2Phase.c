@@ -7,7 +7,6 @@
 
 #include "InternalRoutines.h"
 #include "ZGen_2Phase_fp.h"
-#ifdef TPM_CC_ZGen_2Phase // Conditional expansion of this file
 //
 //     This command uses the TPM to recover one or two Z values in a two phase key exchange protocol
 //
@@ -90,4 +89,3 @@ TPM2_ZGen_2Phase(
 
    return result;
 }
-#endif
