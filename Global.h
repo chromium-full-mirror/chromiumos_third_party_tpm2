@@ -1255,7 +1255,7 @@ struct GlobalStruct
 //
 //      The cpHash for command audit
 //
-#ifdef TPM_CC_GetCommandAuditDigest
+#if IS_CC_ENABLED(GetCommandAuditDigest)
    TPM2B_DIGEST         s_cpHashForCommandAudit;
 #define s_cpHashForCommandAudit global_struct.s_cpHashForCommandAudit
 #endif

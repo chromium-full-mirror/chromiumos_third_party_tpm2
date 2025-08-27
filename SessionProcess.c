@@ -1181,7 +1181,7 @@ CheckAuthSession(
        return CheckSessionHMAC(sessionIndex, cpHash);
    }
 }
-#ifdef    TPM_CC_GetCommandAuditDigest
+#if IS_CC_ENABLED(GetCommandAuditDigest)
 //
 //
 //            CheckCommandAudit()
@@ -1350,7 +1350,7 @@ ParseSessionBuffer(
                                             TPM_RC_S + g_rcIndex[sessionIndex]);
           }
    }
-#ifdef TPM_CC_GetCommandAuditDigest
+#if IS_CC_ENABLED(GetCommandAuditDigest)
    // Check if the command should be audited.
    result = CheckCommandAudit(commandCode, handleNum, handles,
                               parmBufferStart, parmBufferSize);
@@ -1423,7 +1423,7 @@ CheckAuthNoSession(
        if(CommandAuthRole(commandCode, i) != AUTH_NONE)
            return TPM_RC_AUTH_MISSING;
    }
-#ifdef TPM_CC_GetCommandAuditDigest
+#if IS_CC_ENABLED(GetCommandAuditDigest)
    // Check if the command should be audited.
    result = CheckCommandAudit(commandCode, handleNum, handles,
                               parmBufferStart, parmBufferSize);
@@ -1431,7 +1431,7 @@ CheckAuthNoSession(
 #endif
    // Initialize number of sessions to be 0
    s_sessionNum = 0;
-   return TPM_RC_SUCCESS;
+   return result;
 }
 //
 //
@@ -1526,7 +1526,7 @@ Audit(
    CryptCompleteHash2B(&hashState, &auditSession->u2.auditDigest.b);
    return;
 }
-#ifdef TPM_CC_GetCommandAuditDigest
+#if IS_CC_ENABLED(GetCommandAuditDigest)
 //
 //
 //            CommandAudit()
@@ -1911,7 +1911,9 @@ BuildResponseSession(
    // A command with no session may trigger a change of the exclusivity state.
    UpdateAuditSessionStatus(commandCode, resParmSize, resParmBuffer);
    // Audit command.
+#if IS_CC_ENABLED(GetCommandAuditDigest)
    CommandAudit(commandCode, resParmSize, resParmBuffer);
+#endif
    // Process command with sessions.
    if(tag == TPM_ST_SESSIONS)
    {
