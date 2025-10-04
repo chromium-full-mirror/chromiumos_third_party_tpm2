@@ -305,7 +305,7 @@
 #define   MAX_DIGEST_BUFFER                      1024
 #define   MAX_NV_INDEX_SIZE                      2048
 //
-#define MAX_NV_BUFFER_SIZE                1024
+#define MAX_NV_BUFFER_SIZE                1280
 #define MAX_CAP_BUFFER                    1024
 #ifdef EMBEDDED_MODE
 // This must be matched by the package using this library!
