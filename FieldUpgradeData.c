@@ -7,7 +7,6 @@
 
 #include "InternalRoutines.h"
 #include "FieldUpgradeData_fp.h"
-#ifdef TPM_CC_FieldUpgradeData // Conditional expansion of this file
 TPM_RC
 TPM2_FieldUpgradeData(
    FieldUpgradeData_In       *in,             // IN: input parameter list
@@ -19,4 +18,3 @@ TPM2_FieldUpgradeData(
    UNUSED_PARAMETER(out);
    return TPM_RC_SUCCESS;
 }
-#endif

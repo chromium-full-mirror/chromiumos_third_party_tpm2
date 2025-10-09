@@ -203,6 +203,9 @@ CommandAuditCapGetCCList(
      UINT32           i;
      // Initialize output handle list
      commandList->count = 0;
+#if !IS_CC_ENABLED(GetCommandAuditDigest)
+     return more;
+#endif
      // The maximum count of commands we may return is MAX_CAP_CC_ALL.
      if(count > MAX_CAP_CC_ALL) count = MAX_CAP_CC_ALL;
      // If the command code is smaller than TPM_CC_FIRST, start from TPM_CC_FIRST

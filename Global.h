@@ -1092,6 +1092,7 @@ struct GlobalStruct
 //
    UINT32               s_decryptSessionIndex;
 #define s_decryptSessionIndex global_struct.s_decryptSessionIndex
+#if IS_CC_ENABLED(GetSessionAuditDigest)
 //
 //      Index of a session used for audit
 //
@@ -1102,6 +1103,7 @@ struct GlobalStruct
 //
    TPM2B_DIGEST         s_cpHashForAudit;
 #define s_cpHashForAudit global_struct.s_cpHashForAudit
+#endif
 //
 //      Number of authorization sessions present in the command
 //
@@ -1255,7 +1257,7 @@ struct GlobalStruct
 //
 //      The cpHash for command audit
 //
-#ifdef TPM_CC_GetCommandAuditDigest
+#if IS_CC_ENABLED(GetCommandAuditDigest)
    TPM2B_DIGEST         s_cpHashForCommandAudit;
 #define s_cpHashForCommandAudit global_struct.s_cpHashForCommandAudit
 #endif
