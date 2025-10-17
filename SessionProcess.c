@@ -875,7 +875,9 @@ RetrieveSessionData (
    TPM_HT          sessionType;
    s_decryptSessionIndex = UNDEFINED_INDEX;
    s_encryptSessionIndex = UNDEFINED_INDEX;
+#if IS_CC_ENABLED(GetSessionAuditDigest)
    s_auditSessionIndex = UNDEFINED_INDEX;
+#endif
    for(sessionIndex = 0; bufferSize > 0; sessionIndex++)
    {
        // If maximum allowed number of sessions has been parsed, return a size
@@ -980,6 +982,9 @@ RetrieveSessionData (
          // At last process audit.
          if(s_attributes[sessionIndex].audit)
          {
+#if !IS_CC_ENABLED(GetSessionAuditDigest)
+             return TPM_RC_ATTRIBUTES + TPM_RC_S + g_rcIndex[sessionIndex];
+#else
              // Audit attribute can only appear in one session.
              if(s_auditSessionIndex != UNDEFINED_INDEX)
                  return TPM_RC_ATTRIBUTES + TPM_RC_S + g_rcIndex[sessionIndex];
@@ -1000,6 +1005,7 @@ RetrieveSessionData (
                         return TPM_RC_EXCLUSIVE;
                }
                s_auditSessionIndex = sessionIndex;
+#endif
          }
          // Initialize associated handle as undefined. This will be changed when
          // the handles are processed.
@@ -1181,7 +1187,7 @@ CheckAuthSession(
        return CheckSessionHMAC(sessionIndex, cpHash);
    }
 }
-#ifdef    TPM_CC_GetCommandAuditDigest
+#if IS_CC_ENABLED(GetCommandAuditDigest)
 //
 //
 //            CheckCommandAudit()
@@ -1323,8 +1329,10 @@ ParseSessionBuffer(
                                &cpHash, &nameHash);
              }
              // If this session is for auditing, save the cpHash.
+#if IS_CC_ENABLED(GetSessionAuditDigest)
              if(s_attributes[sessionIndex].audit)
                  s_cpHashForAudit = cpHash;
+#endif
          }
          // if the session has an associated handle, check the auth
          if(s_associatedHandles[sessionIndex] != TPM_RH_UNASSIGNED)
@@ -1350,7 +1358,7 @@ ParseSessionBuffer(
                                             TPM_RC_S + g_rcIndex[sessionIndex]);
           }
    }
-#ifdef TPM_CC_GetCommandAuditDigest
+#if IS_CC_ENABLED(GetCommandAuditDigest)
    // Check if the command should be audited.
    result = CheckCommandAudit(commandCode, handleNum, handles,
                               parmBufferStart, parmBufferSize);
@@ -1423,7 +1431,7 @@ CheckAuthNoSession(
        if(CommandAuthRole(commandCode, i) != AUTH_NONE)
            return TPM_RC_AUTH_MISSING;
    }
-#ifdef TPM_CC_GetCommandAuditDigest
+#if IS_CC_ENABLED(GetCommandAuditDigest)
    // Check if the command should be audited.
    result = CheckCommandAudit(commandCode, handleNum, handles,
                               parmBufferStart, parmBufferSize);
@@ -1431,7 +1439,7 @@ CheckAuthNoSession(
 #endif
    // Initialize number of sessions to be 0
    s_sessionNum = 0;
-   return TPM_RC_SUCCESS;
+   return result;
 }
 //
 //
@@ -1469,6 +1477,7 @@ ComputeRpHash(
     CryptCompleteHash2B(&hashState, &rpHash->b);
     return;
 }
+#if IS_CC_ENABLED(GetSessionAuditDigest)
 //
 //
 //             InitAuditSession()
@@ -1526,7 +1535,8 @@ Audit(
    CryptCompleteHash2B(&hashState, &auditSession->u2.auditDigest.b);
    return;
 }
-#ifdef TPM_CC_GetCommandAuditDigest
+#endif
+#if IS_CC_ENABLED(GetCommandAuditDigest)
 //
 //
 //            CommandAudit()
@@ -1587,6 +1597,7 @@ CommandAudit(
     return;
 }
 #endif
+#if IS_CC_ENABLED(GetSessionAuditDigest)
 //
 //
 //              UpdateAuditSessionStatus()
@@ -1659,6 +1670,7 @@ UpdateAuditSessionStatus(
    }
    return;
 }
+#endif
 //
 //
 //              ComputeResponseHMAC()
@@ -1909,9 +1921,13 @@ BuildResponseSession(
    }
    // Audit session should be updated first regardless of the tag.
    // A command with no session may trigger a change of the exclusivity state.
+#if IS_CC_ENABLED(GetSessionAuditDigest)
    UpdateAuditSessionStatus(commandCode, resParmSize, resParmBuffer);
+#endif
    // Audit command.
+#if IS_CC_ENABLED(GetCommandAuditDigest)
    CommandAudit(commandCode, resParmSize, resParmBuffer);
+#endif
    // Process command with sessions.
    if(tag == TPM_ST_SESSIONS)
    {
