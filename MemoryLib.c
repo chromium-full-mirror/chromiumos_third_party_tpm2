@@ -24,7 +24,7 @@
 //     NOTE:           This function is used by MemoryCopy(), MemoryCopy2B(), and MemoryConcat2b() and requires that the caller
 //                     know the maximum size of the destination buffer so that there is no possibility of buffer overrun.
 //
-LIB_EXPORT void
+LIB_EXPORT __attribute__((noinline)) void
 MemoryMove(
       void              *destination,          //   OUT: move destination
       const void        *source,               //   IN: move source
@@ -32,31 +32,10 @@ MemoryMove(
       UINT32             dSize                 //   IN: size of the receive buffer
       )
 {
-      const BYTE *p = (BYTE *)source;
-      BYTE *q = (BYTE *)destination;
       if(destination == NULL || source == NULL)
           return;
       pAssert(size <= dSize);
-      // if the destination buffer has a lower address than the
-      // source, then moving bytes in ascending order is safe.
-      dSize -= size;
-      if (p>q || (p+size <= q))
-      {
-          while(size--)
-              *q++ = *p++;
-      }
-      // If the destination buffer has a higher address than the
-      // source, then move bytes from the end to the beginning.
-      else if (p < q)
-      {
-          p += size;
-          q += size;
-//
-          while (size--)
-              *--q = *--p;
-      }
-      // If the source and destination address are the same, nothing to move.
-      return;
+      __builtin_memmove(destination, source, size);
 }
 //
 //         MemoryEqual()
